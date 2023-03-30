@@ -13,7 +13,7 @@ const client = new OAuth2Client(config.google.clientId);
 usersRouter.post('/', imagesUpload.single('avatar'), async (req, res, next) => {
     try {
         const user = new User({
-            email: req.body.username,
+            email: req.body.email,
             password: req.body.password,
             displayName: req.body.displayName,
             avatar: req.file && req.file.filename,
@@ -32,10 +32,10 @@ usersRouter.post('/', imagesUpload.single('avatar'), async (req, res, next) => {
 });
 
 usersRouter.post('/sessions', async (req, res) => {
-    const user = await User.findOne({username: req.body.username});
+    const user = await User.findOne({email: req.body.email});
 
     if (!user) {
-        return res.status(400).send({error: 'Username not found'});
+        return res.status(400).send({error: 'Email not found'});
     }
 
     const isMatch = await user.checkPassword(req.body.password);
@@ -97,7 +97,7 @@ usersRouter.post('/google', async (req, res, next) => {
 usersRouter.delete('/sessions', async (req, res, next) => {
     try {
         const token = req.get('Authorization');
-        const success = {message: 'OK'};
+        const success = {message: 'Deleted!'};
 
         if (!token) {
             return res.send(success);
@@ -106,7 +106,7 @@ usersRouter.delete('/sessions', async (req, res, next) => {
         const user = await User.findOne({token});
 
         if (!user) {
-            return res.send(success);
+            return res.send({message: 'Not found this user!'});
         }
 
         user.generateToken();
