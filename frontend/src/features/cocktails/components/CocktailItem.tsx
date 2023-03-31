@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, CardActions, CardHeader, CardMedia, Grid, IconButton, styled, Typography} from '@mui/material';
+import {Card, CardActions, CardHeader, Grid, IconButton, styled, Typography} from '@mui/material';
 import UnpublishedIcon from '@mui/icons-material/Unpublished';
 import {apiURL} from '../../../constants';
 import {useAppSelector} from "../../../app/hooks";
@@ -9,9 +9,10 @@ import {selectCocktailDeleting, selectCocktailPublishing} from "../cocktailsSlic
 import {Link} from "react-router-dom";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
-const ImageCardMedia = styled(CardMedia)({
-    height: 0,
-    paddingTop: '56.25%',
+const StyledImage = styled('img')({
+    height: '300px',
+    width: '350px',
+    borderRadius: '12px',
 });
 
 const ActionsContainer = styled(CardActions)({
@@ -39,11 +40,14 @@ const CocktailItem: React.FC<Props> = ({id, title, image, isPublished, onRemove,
         <Grid item xs={12} sm={6} md={4} lg={3}>
             <Card>
                 <CardHeader title={title}/>
-                <ImageCardMedia image={apiURL + '/' + image} title={title}/>
+                <Grid item>
+                    <StyledImage src={apiURL + '/' + image} title={title}/>
+                </Grid>
                 <CardActions>
                     <Grid container justifyContent="space-between" alignItems="center">
-                        <IconButton component={Link} to={'/cocktails/' + id}
-                                    disabled={loading ? loading === id : loadingPublish ? loadingPublish === id : false}>
+                        <IconButton
+                            component={Link} to={'/cocktails/' + id}
+                            disabled={loading ? loading === id : loadingPublish ? loadingPublish === id : false}>
                             <ArrowForwardIcon/>
                         </IconButton>
 

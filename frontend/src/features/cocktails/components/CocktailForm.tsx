@@ -5,15 +5,15 @@ import FileInput from "../../../components/UI/FileInput/FileInput";
 import DeleteIcon from '@mui/icons-material/Delete';
 import ButtonWithProgress from "../../../components/UI/ButtonWithProgress/ButtonWithProgress";
 import {useAppSelector} from "../../../app/hooks";
-import {selectCocktailCreating} from "../cocktailsSlice";
+import {selectCocktailCreating, selectCreateError} from "../cocktailsSlice";
 
 interface Props {
     onSubmit: (mutation: CocktailMutation) => void;
 }
 
 const CocktailForm: React.FC<Props> = ({onSubmit}) => {
-
     const createLoading = useAppSelector(selectCocktailCreating);
+    const error = useAppSelector(selectCreateError);
 
     const [state, setState] = useState<CocktailMutation>({
         title: '',
@@ -87,6 +87,14 @@ const CocktailForm: React.FC<Props> = ({onSubmit}) => {
         });
     };
 
+    const getFieldError = (fieldName: string) => {
+        try {
+            return error?.errors[fieldName].message;
+        } catch {
+            return undefined;
+        }
+    };
+
     return (
         <form autoComplete="off" onSubmit={submitFormHandler}>
             <Grid container direction="column" spacing={2}>
@@ -99,9 +107,10 @@ const CocktailForm: React.FC<Props> = ({onSubmit}) => {
                         onChange={inputChangeHandler}
                         name="title"
                         required
+                        error={Boolean(getFieldError('title'))}
+                        helperText={getFieldError('title')}
                     />
                 </Grid>
-
                 <Grid item xs>
                     <TextField
                         multiline
@@ -112,14 +121,14 @@ const CocktailForm: React.FC<Props> = ({onSubmit}) => {
                         onChange={inputChangeHandler}
                         name="recipe"
                         required
+                        error={Boolean(getFieldError('recipe'))}
+                        helperText={getFieldError('recipe')}
                     />
                 </Grid>
-
-
                 <Grid item xs>
                     {state.ingredients.map((ing, i) => (
                         <Grid container key={i} alignItems="center">
-                            <Grid item xs={8} paddingY={1} paddingRight={2}>
+                            <Grid item xs={6} paddingY={1} paddingRight={2}>
                                 <TextField
                                     label="Ingredient name"
                                     type="text"
@@ -128,10 +137,11 @@ const CocktailForm: React.FC<Props> = ({onSubmit}) => {
                                     onChange={(e) => changeIngredient(i, 'title', e.target.value)}
                                     fullWidth
                                     required
+                                    error={Boolean(getFieldError(`ingredients.${i}.title`))}
+                                    helperText={getFieldError(`ingredients.${i}.title`)}
                                 />
                             </Grid>
-
-                            <Grid item xs={3} paddingY={1} paddingRight={2}>
+                            <Grid item xs={5} paddingY={1} paddingRight={2}>
                                 <TextField
                                     label="Amount"
                                     type="text"
@@ -140,19 +150,20 @@ const CocktailForm: React.FC<Props> = ({onSubmit}) => {
                                     onChange={(e) => changeIngredient(i, 'amount', e.target.value)}
                                     fullWidth
                                     required
+                                    error={Boolean(getFieldError(`ingredients.${i}.amount`))}
+                                    helperText={getFieldError(`ingredients.${i}.amount`)}
                                 />
                             </Grid>
-
-                                <Grid item paddingY={1}>
-                                    {state.ingredients.length > 1 && (
+                            <Grid item paddingY={1}>
+                                {state.ingredients.length > 1 && (
                                     <IconButton
                                         aria-label="delete"
                                         onClick={() => deleteIngredient(ing)}
                                     >
                                         <DeleteIcon fontSize="medium"/>
                                     </IconButton>
-                                    )}
-                                </Grid>
+                                )}
+                            </Grid>
                         </Grid>
                     ))}
 
@@ -167,11 +178,11 @@ const CocktailForm: React.FC<Props> = ({onSubmit}) => {
                     </Grid>
                 </Grid>
 
-                <Grid item xs>
+                <Grid item>
                     <FileInput label="Image" onChange={fileInputChangeHandler} name="image" type="image/*"/>
                 </Grid>
 
-                <Grid item xs>
+                <Grid item>
                     <ButtonWithProgress
                         type="submit"
                         variant="contained"

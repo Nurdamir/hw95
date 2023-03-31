@@ -1,6 +1,7 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
-import {Cocktail, CocktailMutation} from "../../types";
+import {Cocktail, CocktailMutation, ValidationError} from "../../types";
 import axiosApi from "../../axiosApi";
+import {isAxiosError} from "axios";
 
 export const fetchCocktails = createAsyncThunk<Cocktail[], string | undefined>(
     'cocktails/fetchAll',
@@ -10,19 +11,15 @@ export const fetchCocktails = createAsyncThunk<Cocktail[], string | undefined>(
         if (id !== undefined) {
             url = `/cocktails?user=${id}`;
         }
-
         const response = await axiosApi.get(url);
-        console.log(response.data);
-
         return response.data;
-
-
     }
 );
 
-export const createCocktail = createAsyncThunk<void, CocktailMutation>(
+export const createCocktail = createAsyncThunk<void, CocktailMutation, {rejectValue: ValidationError}>(
     'cocktails/create',
-    async (cocktailMutation) => {
+    async (cocktailMutation, {rejectWithValue}) => {
+        try {
         const formData = new FormData();
 
         const keys = Object.keys(cocktailMutation) as (keyof CocktailMutation)[];
@@ -37,6 +34,12 @@ export const createCocktail = createAsyncThunk<void, CocktailMutation>(
             }
         });
         await axiosApi.post('/cocktails', formData);
+        } catch (e) {
+            if (isAxiosError(e) && e.response && e.response.status === 400) {
+                return rejectWithValue(e.response.data as ValidationError);
+            }
+            throw e;
+        }
     }
 );
 

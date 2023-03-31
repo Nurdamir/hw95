@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Card, CardActions, CardMedia, Grid, ListItem, styled, Typography} from "@mui/material";
+import {Card, CardActions, Grid, ListItem, styled, Typography} from "@mui/material";
 import {useParams} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {selectUser} from "../../users/usersSlice";
@@ -9,9 +9,10 @@ import Preloader from "../../../components/UI/Preloader/Preloader";
 import {apiURL} from "../../../constants";
 import UnpublishedIcon from "@mui/icons-material/Unpublished";
 
-const ImageCardMedia = styled(CardMedia)({
-    height: 0,
-    paddingTop: '56.25%',
+const StyledImage = styled('img')({
+    height: '500px',
+    width: '450px',
+    borderRadius: '12px',
 });
 
 const FullCocktail = () => {
@@ -26,15 +27,17 @@ const FullCocktail = () => {
     }, [dispatch, id]);
 
     return (
-        <Grid container p={3} justifyContent="center">
+        <Grid container padding={3} justifyContent="center">
             <Preloader loading={loading} />
             {cocktail ? (
-                <Grid container justifyContent={"space-between"} xs={8}>
+                <Grid container justifyContent={"space-between"}>
                     <Card>
                         <Grid item padding={2}>
                             <Typography variant="h3" textAlign="center">{cocktail.title}</Typography>
                         </Grid>
-                        <ImageCardMedia image={apiURL + '/' + cocktail.image} title={cocktail.title}/>
+                        <Grid item padding={2} textAlign="center">
+                            <StyledImage src={apiURL + '/' + cocktail.image} title={cocktail.title}/>
+                        </Grid>
                         <CardActions>
                             <Grid container justifyContent="space-between" alignItems="center">
                                 {user && user.role === 'admin' && !cocktail.isPublished && (
@@ -59,7 +62,7 @@ const FullCocktail = () => {
                     </Card>
                 </Grid>
             ) : (
-                <Grid item >
+                <Grid item>
                     <Typography variant="h4">Cocktail is not found.</Typography>
                 </Grid>
             )}
