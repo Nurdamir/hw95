@@ -18,15 +18,12 @@ cocktailsRouter.get('/', async (req, res, next) => {
         if (req.query.user) {
             cocktails = await Cocktail.find({user: req.query.user});
         } else {
-            if (!user) {
-                cocktails = await Cocktail.find({isPublished: true});
-            }
+            cocktails = await Cocktail.find({isPublished: true});
 
             if (user && user.role === 'admin') {
                 cocktails = await Cocktail.find();
             }
         }
-
         return res.send(cocktails);
     } catch (e) {
         return next(e);
