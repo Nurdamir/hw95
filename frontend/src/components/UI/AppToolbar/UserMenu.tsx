@@ -41,7 +41,6 @@ const UserMenu: React.FC<Props> = ({user}) => {
                     </Grid>
                 )}
             </Button>
-
             <Menu
                 anchorEl={anchorEl}
                 keepMounted

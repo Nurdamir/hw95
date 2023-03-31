@@ -7,8 +7,8 @@ import {OAuth2Client} from "google-auth-library";
 import {imagesUpload} from "../multer";
 
 const usersRouter = express.Router();
-
 const client = new OAuth2Client(config.google.clientId);
+
 
 usersRouter.post('/', imagesUpload.single('avatar'), async (req, res, next) => {
     try {

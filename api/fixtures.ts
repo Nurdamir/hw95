@@ -30,7 +30,7 @@ const run = async () => {
         token: crypto.randomUUID()
     });
 
-    const [MOJITO, MARTINI, NEGRONI, BRAMBLE] = await Cocktail.create({
+    await Cocktail.create({
         user: user,
         title: 'Mojito',
         image: "fixtures/Mojito.jpg",
